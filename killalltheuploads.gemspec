@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.license="apache"
   spec.version       = Killalltheuploads::VERSION
   spec.authors       = ["Jeff Juszczak"]
-  spec.email         = ["jeff@13gne.com"]
+  spec.email         = ["jeff@mooottoast.com"]
 
   spec.summary       = %q{TODO: Write a short summary, because Rubygems requires one.}
   spec.description   = %q{TODO: Write a longer description or delete this line.}
