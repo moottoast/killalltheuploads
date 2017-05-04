@@ -1,0 +1,45 @@
+#!/usr/bin/env ruby
+
+require 'optparse'
+require 'methadone'
+require 'json'
+require 'aws-sdk'
+require 'killalltheuploads.rb'
+
+class App
+  include Methadone::Main
+  include Methadone::CLILogging
+  include Methadone::SH
+
+  ENV['AWS_ACCESS_KEY_ID'] = ''
+  ENV['AWS_SECRET_ACCESS_KEY'] = ''
+  ENV['AWS_REGION'] = 'us-east-1'
+
+  main do |bucket_name|
+    s3 = Aws::S3::Client.new
+    resp = s3.list_multipart_uploads({
+      bucket: "#{bucket_name}"
+    })
+    resp.uploads.each do |u|
+      puts "Deleting: #{u.key}"
+      s3.abort_multipart_upload({
+        bucket: "#{bucket_name}",
+        key: "#{u.key}",
+        upload_id: "#{u.upload_id}"
+      })
+    end
+
+  end
+
+  version Killalltheuploads::VERSION
+
+  description 'Deletes all of the pending multipart uploads in a given S3 bucket'
+
+  #arg :access_key_id, "The AWS Access Key ID of the IAM user with access to the bucket"
+  #arg :secret_access_key, "The AWS Secret Access Key of the IAM user with access to the bucket"
+  arg :bucket_name, "The name of the S3 bucket you want to clear of partial multipart uploads"
+
+  use_log_level_option :toggle_debug_on_signal => 'USR1'
+
+  go!
+end
